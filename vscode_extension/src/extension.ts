@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "helloworld-sample" is now active!');
+	console.log('extension is loaded');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -18,6 +18,15 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World!');
 	});
+
+	const provider = {
+		provideInlineCompletionItems(document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, token: vscode.CancellationToken) {
+			console.log('provide');
+			return [new vscode.InlineCompletionItem('Hello World')];
+		},
+	};
+
+	vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, provider);
 
 	context.subscriptions.push(disposable);
 }

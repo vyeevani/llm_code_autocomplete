@@ -1,10 +1,10 @@
 {
-	"name": "helloworld-sample",
-	"displayName": "helloworld-sample",
-	"description": "HelloWorld example for VS Code",
+	"name": "large_language_model_code_autocomplete",
+	"displayName": "Large Language Model Code Autocomplete",
+	"description": "Code suggestions for VS Code powered by open source large language models",
 	"version": "0.0.1",
-	"publisher": "vscode-samples",
-	"repository": "https://github.com/Microsoft/vscode-extension-samples/helloworld-sample",
+	"publisher": "vyeevani",
+	"repository": "https://github.com/vyeevani/llm_code_autocomplete",
 	"engines": {
 		"vscode": "^1.34.0"
 	},
@@ -20,6 +20,17 @@
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "extension.llmCodeAutocomplete",
+				"title": "LLM Code Autocomplete"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "editor.action.inlineSuggest.trigger",
+				"key": "alt+\\",
+				"when": "editorTextFocus && !editorHasSelection && config.github.copilot.inlineSuggest.enable && !inlineSuggestionsVisible"
 			}
 		]
 	},
