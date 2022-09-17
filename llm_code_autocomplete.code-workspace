@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "vscode_extension"
+		},
+		{
+			"path": "prediction_engine"
 		}
 	]
 }

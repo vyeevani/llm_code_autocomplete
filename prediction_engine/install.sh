@@ -1,0 +1,1 @@
+pyinstaller --onefile --hidden-import=torch  --collect-data torch --copy-metadata torch --hidden-import=tqdm --copy-metadata tqdm --copy-metadata regex --copy-metadata requests --copy-metadata packaging --copy-metadata filelock --copy-metadata numpy --copy-metadata tokenizers --copy-metadata importlib_metadata main.py 
