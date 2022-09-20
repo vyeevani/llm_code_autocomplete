@@ -1,5 +1,7 @@
+from time import sleep
 import transformers
 import sys
+import json
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -9,10 +11,11 @@ if __name__ == "__main__":
 
     # loop infinitely and read user input
     while True:
-        user_input = input("Enter a prompt: ")
-        if user_input == "exit":
-            sys.exit(0)
+        user_input = input()
 
+        # print("hello world")
+        # sys.stdout.flush()
+        
         # encode the user input, add the eos_token and return a tensor in Pytorch
         input_ids = tokenizer.encode(user_input, return_tensors="pt")
 
@@ -23,9 +26,10 @@ if __name__ == "__main__":
             max_length=100,
             top_k=50,
             top_p=0.95,
-            num_return_sequences=5,
+            num_return_sequences=1,
         )
 
-        # for each possibility print (save them to file if you want)
-        for i, sample_output in enumerate(sample_outputs):
-            print("{}: {}".format(i, tokenizer.decode(sample_output, skip_special_tokens=True)))
+        suggestions = [tokenizer.decode(sample_output, skip_special_tokens=True) for sample_output in sample_outputs]
+
+        print(suggestions[0].replace(user_input, ""))
+        sys.stdout.flush()

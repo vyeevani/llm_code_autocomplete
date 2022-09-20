@@ -12,7 +12,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -24,13 +24,6 @@
 			{
 				"command": "extension.llmCodeAutocomplete",
 				"title": "LLM Code Autocomplete"
-			}
-		],
-		"keybindings": [
-			{
-				"command": "editor.action.inlineSuggest.trigger",
-				"key": "alt+\\",
-				"when": "editorTextFocus && !editorHasSelection && config.github.copilot.inlineSuggest.enable && !inlineSuggestionsVisible"
 			}
 		]
 	},
