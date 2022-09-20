@@ -5,16 +5,26 @@ import json
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 if __name__ == "__main__":
-    tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-350M-multi")
-    model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-350M-multi")
+    tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-16B-multi")
+    model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-16B-multi")
 
     # loop infinitely and read user input
     while True:
-        user_input = input()
+        user_input = ""
+        while "<eor>" not in user_input:
+            user_input += input()
+            user_input += "\n"
 
-        # print("hello world")
-        # sys.stdout.flush()
+        user_input = user_input.replace("<eor>\n", "")
+        eprint(user_input)
+
+        # got blank input and we should skip at this point
+        if (user_input == ""):
+            continue
         
         # encode the user input, add the eos_token and return a tensor in Pytorch
         input_ids = tokenizer.encode(user_input, return_tensors="pt")
@@ -23,7 +33,7 @@ if __name__ == "__main__":
         sample_outputs = model.generate(
             input_ids,
             do_sample=True,
-            max_length=100,
+            max_new_tokens=25,
             top_k=50,
             top_p=0.95,
             num_return_sequences=1,

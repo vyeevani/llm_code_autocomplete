@@ -9,19 +9,13 @@ async function llm_request(llm: child.ChildProcess, document: vscode.TextDocumen
 			reject();
 		});
 	} else {
-		// const line = document.lineAt(position.line).text;
-		const line = document.getText(new vscode.Range(position.with(undefined, 0), position));
-		if (line.replaceAll("/", "").trim().length === 0 || 
-			line.trim().length === 0 ) {
-			return new Promise<vscode.InlineCompletionItem[]>((_, reject) => {
-				reject();
-			});
-		}
+		// This will fetch all code in this document from the top
+		const line = document.getText(new vscode.Range(position.with(0, 0), position));
 
 		console.log("extension -> llm: write request ", line);
 
 		// newline is required to flush the stdin to the server
-		const need_flush = llm.stdin!.write(line + "\n", (error) => {
+		const need_flush = llm.stdin!.write(line + "<eor>" + "\n", (error) => {
 			if (error != null) {
 				console.log("extension -> llm: write error ", error);
 			}
@@ -35,13 +29,7 @@ async function llm_request(llm: child.ChildProcess, document: vscode.TextDocumen
 			(resolve, reject) => {
 				console.log("extension: starting read");
 				llm.stdout?.once("data", (data) => {
-					if (token.isCancellationRequested) {
-						console.log("extension: cancelled");
-						reject();
-						return;
-					}
 					const llm_output = data.toString();
-				
 					try {
 						const suggestions: vscode.InlineCompletionItem[] = [];
 						const suggestion = llm_output;
@@ -55,7 +43,7 @@ async function llm_request(llm: child.ChildProcess, document: vscode.TextDocumen
 						return;
 					} catch(e) {
 						console.log("extension: failed to parse server output");
-						reject();
+						resolve([]);
 						return;
 					}
 				});
@@ -84,6 +72,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const llm_file = '/Users/vineethyeevani/Documents/llm_code_autocomplete/prediction_engine/dist/main';
 	const llm: child.ChildProcess = child.spawn(llm_file);
 
+	llm.stderr?.pipe(process.stderr);
+
+	llm.on('exit', () => {
+		console.log("process closed");
+	});
+
 	console.log(llm);
 
 	console.log("Spawned llm");
@@ -103,9 +97,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				first_request = false;
 			} else {
 				console.log("extension: chain request");
-				// requests_promise = requests_promise.finally(() => {
-				// 	return llm_request(llm, document, position, context, token);
-				// });
 				requests_promise = requests_promise.then((_) => {
 					return llm_request(llm, document, position, context, token);
 				}, (_) => {
