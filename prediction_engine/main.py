@@ -12,6 +12,8 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-16B-multi")
     model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-16B-multi")
 
+    eprint("Model initialized")
+
     # loop infinitely and read user input
     while True:
         user_input = ""
