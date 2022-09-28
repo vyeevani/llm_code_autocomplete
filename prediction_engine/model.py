@@ -19,11 +19,11 @@ tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-350M-multi")
 
 mlmodel = ct.models.MLModel('model.mlpackage')
 print("loaded model doing prediction")
-
-for i in range(10):
+input_data = [[float(i) for i in range(100)]]
+for i in range(100):
     # input_sample = str(i)
     # input_ids = tokenizer.encode(input_sample, return_tensors="pt")
     # print(input_ids)
     with Timer("inference " + str(i)):
-        output = mlmodel.predict({'input_ids_1': [[float(i) for i in range(100)]]})
+        output = mlmodel.predict({'input_ids_1': input_data})
 # print("output: ", output)

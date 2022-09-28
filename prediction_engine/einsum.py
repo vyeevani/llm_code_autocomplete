@@ -1,24 +1,24 @@
-# import torch                                                                                                                                                                                  
-# import numpy as np                                                                                                                                                                            
-# import coremltools as ct                                                                                                                                                                      
+import torch                                                                                                                                                                                  
+import numpy as np                                                                                                                                                                            
+import coremltools as ct                                                                                                                                                                      
                                                                                                                                                                                               
                                                                                                                                                                                               
-# class EinsumModule(torch.nn.Module):                                                                                                                                                          
-#     def forward(self, x, y):                                                                                                                                                                  
-#         out = torch.einsum("i,j->ij", x, y)                                                                                                                                                   
-#         return out                                                                                                                                                                            
+class EinsumModule(torch.nn.Module):                                                                                                                                                          
+    def forward(self, x, y):                                                                                                                                                                  
+        out = torch.einsum("i,j->ij", x, y)                                                                                                                                                   
+        return out                                                                                                                                                                            
                                                                                                                                                                                               
                                                                                                                                                                                               
-# model = EinsumModule()                                                                                                                                                                        
-# i, j = 2, 3                                                                                                                                                                                   
-# x = torch.zeros((i,))                                                                                                                                                                         
-# y = torch.zeros((j,))                                                                                                                                                                         
-# traced_model = torch.jit.trace(model, (x, y))                                                                                                                                                 
-# input_types = [                                                                                                                                                                               
-#     ct.TensorType(name="x", dtype=np.float32, shape=x.shape),                                                                                                                                 
-#     ct.TensorType(name="y", dtype=np.float32, shape=y.shape),                                                                                                                                 
-# ]                                                                                                                                                                                             
-# mlmodel = ct.convert(traced_model, source="pytorch", inputs=input_types)
+model = EinsumModule()                                                                                                                                                                        
+i, j = 2, 3                                                                                                                                                                                   
+x = torch.zeros((i,))                                                                                                                                                                         
+y = torch.zeros((j,))                                                                                                                                                                         
+traced_model = torch.jit.trace(model, (x, y))                                                                                                                                                 
+input_types = [                                                                                                                                                                               
+    ct.TensorType(name="x", dtype=np.float32, shape=x.shape),                                                                                                                                 
+    ct.TensorType(name="y", dtype=np.float32, shape=y.shape),                                                                                                                                 
+]                                                                                                                                                                                             
+mlmodel = ct.convert(traced_model, source="pytorch", inputs=input_types)
 
 def parse_einsum_equation(equation):
     """

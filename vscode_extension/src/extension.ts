@@ -2,6 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as child from 'child_process';
 import * as vscode from 'vscode';
+import fetch from 'node-fetch';
+import { setFlagsFromString } from 'v8';
 
 async function llm_request(llm: child.ChildProcess, document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, token: vscode.CancellationToken): Promise<vscode.InlineCompletionItem[]> {
 	if (token.isCancellationRequested) {
@@ -113,9 +115,114 @@ async function llm_request(llm: child.ChildProcess, document: vscode.TextDocumen
 // 	context.subscriptions.push(disposable);
 // }
 
+/*
+Desired user experience:
+When the user has some charecters on the current line, suggestions for the next word
+start to appear. The suggestions continue to grow until the user has selected what
+they want to appear. 
+*/
+
+// export async function activate(context: vscode.ExtensionContext) {
+// 	const llm: child.ChildProcess = child.spawn("python", ["/Users/vineethyeevani/Documents/llm_code_autocomplete/prediction_engine/main.py"]);
+
+// 	console.log(llm);
+
+// 	llm.stderr?.pipe(process.stderr);
+// 	llm.stdout?.pipe(process.stdout);
+
+// 	llm.on('exit', () => {
+// 		console.log("process closed");
+// 	});
+
+	// const decoration_type = vscode.window.createTextEditorDecorationType({
+	// 	// borderWidth: '10px',
+	// 	// borderStyle: 'solid',
+	// 	// overviewRulerColor: 'blue',
+	// 	fontStyle: "italic",
+	// 	// overviewRulerLane: vscode.OverviewRulerLane.Right,
+	// 	// light: {
+	// 	// 	// this color will be used in light color themes
+	// 	// 	borderColor: 'darkblue'
+	// 	// },
+	// 	// dark: {
+	// 	// 	// this color will be used in dark color themes
+	// 	// 	borderColor: 'lightblue'
+	// 	// }
+	// });
+	// setInterval(() => {
+	// 	const activeEditor = vscode.window.activeTextEditor!;
+	// 	const position = activeEditor.selection.active;
+
+	// 	const selection = activeEditor.selection;
+	// 	console.log(selection.anchor, selection.active);
+
+	// 	if (!selection.anchor.isEqual(selection.active)) {
+	// 		const document = activeEditor.document;
+
+	// 		// Get the word within the selection
+	// 		const selection_range = new vscode.Range(selection.anchor, selection.active);
+	// 		console.log(selection_range);
+	// 		const word = document.getText(selection_range);
+	// 		const reversed = word.split('').reverse().join('');
+	// 		activeEditor.edit(editBuilder => {
+	// 			editBuilder.replace(selection, reversed);
+	// 		});
+
+	// 		activeEditor.setDecorations(decoration_type, [selection_range]);
+	// 	} else {
+	// 		console.log("Not selected");
+	// 	}
+	// }, 2000);
+
+	// setTimeout(async () => {
+	// 	console.log("sending request");
+	// 	const response = await fetch('http://localhost:5000/');
+	// 	console.log("sendoing request");
+	// 	const text = await response.text();
+	// 	console.log(text);
+	// }, 1000);
+
+
+// 	return;
+// }
+
+class LargeLanguageModel {
+	llm_process: child.ChildProcess;
+	constructor() {
+		this.llm_process = child.spawn("python", ["/Users/vineethyeevani/Documents/llm_code_autocomplete/prediction_engine/main.py"]);
+		// Route the I/O from the child process to visual studio code output
+		this.llm_process.stderr?.pipe(process.stderr);
+		this.llm_process.stdout?.pipe(process.stdout);
+
+		// Register exit notification
+		this.llm_process.on('exit', () => {
+			console.log("process closed");
+		});
+	}
+
+	// Going to try to send multiple 
+	request(context: string) {
+	}
+}
 
 export async function activate(context: vscode.ExtensionContext) {
+	// Spawn the child process
+	const llm: child.ChildProcess = 
+
+
 	const provider = {
-	async provideInlineCompletionItems(document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, token: vscode.CancellationToken) {
-	}
-};
+		async provideInlineCompletionItems(
+			document: vscode.TextDocument, 
+			position: vscode.Position, 
+			context: vscode.InlineCompletionContext, 
+			token: vscode.CancellationToken) {
+				// Everytime a new completion request happens, we need to inform
+				// the llm_process that the user has done something and that the
+				// suggestions need to be refreshed
+
+
+			}
+			
+
+	return;
+}
