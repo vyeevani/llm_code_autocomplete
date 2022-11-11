@@ -4,6 +4,8 @@ import * as child from 'child_process';
 import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 import { setFlagsFromString } from 'v8';
+import { request } from 'http';
+import tcpPortUsed from 'tcp-port-used';
 
 async function llm_request(llm: child.ChildProcess, document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext, token: vscode.CancellationToken): Promise<vscode.InlineCompletionItem[]> {
 	if (token.isCancellationRequested) {
@@ -200,29 +202,45 @@ class LargeLanguageModel {
 		});
 	}
 
-	// Going to try to send multiple 
-	request(context: string) {
+	// Going to try to send a single request and get multiple responses back
+	async request(context: string) {
+		tcpPortUsed.waitUntilUsed(5000, 500, 5000)
+			.then(async function() {
+				const response = await fetch('http://localhost:5000/?request='+context);
+				try {
+					for await (const chunk of response.body) {
+						console.log(chunk.toString());
+					}
+				} catch (err) {
+					console.error(err);
+				}
+			}, function(err: Error) {
+				console.log('Error:', err.message);
+			});
+
 	}
 }
 
 export async function activate(context: vscode.ExtensionContext) {
 	// Spawn the child process
-	const llm: child.ChildProcess = 
 
+	const llm = new LargeLanguageModel();
 
-	const provider = {
-		async provideInlineCompletionItems(
-			document: vscode.TextDocument, 
-			position: vscode.Position, 
-			context: vscode.InlineCompletionContext, 
-			token: vscode.CancellationToken) {
-				// Everytime a new completion request happens, we need to inform
-				// the llm_process that the user has done something and that the
-				// suggestions need to be refreshed
-
-
-			}
+	setTimeout(async () => {
+		llm.request("");
+	}, 1000);
+	
+	// const provider = {
+	// 	async provideInlineCompletionItems(
+	// 		document: vscode.TextDocument, 
+	// 		position: vscode.Position, 
+	// 		context: vscode.InlineCompletionContext, 
+	// 		token: vscode.CancellationToken) {
+	// 			// Everytime a new completion request happens, we need to inform
+	// 			// the llm_process that the user has done something and that the
+	// 			// suggestions need to be refreshed
+	// 		}
 			
 
-	return;
+	// return;
 }

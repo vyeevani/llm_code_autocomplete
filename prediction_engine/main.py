@@ -3,7 +3,7 @@
 # import sys
 # import json
 
-# from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # def eprint(*args, **kwargs):
 #     print(*args, file=sys.stderr, **kwargs)
@@ -52,33 +52,39 @@
 # this is to prevent the webserver from blocking while the model is predicting
 # and to prevent the model from blocking while the webserver is waiting for a request
 from flask import Flask, Response, Request
+import time
 import sys
 
 app = Flask(__name__)
 
-# tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-16B-multi")
-# model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-16B-multi")
+tokenizer = AutoTokenizer.from_pretrained("Salesforce/codegen-350M-multi")
+model = AutoModelForCausalLM.from_pretrained("Salesforce/codegen-350M-multi")
 
 @app.route('/')
 def main():
-    # def get_prediction():
-            # request = request.args.get('request')
-            # input_ids = tokenizer.encode(request, return_tensors="pt")
-            # sample_outputs = model.generate(
-            #     input_ids,
-            #     do_sample=True,
-            #     max_new_tokens=25,
-            #     top_k=50,
-            #     top_p=0.95,
-            #     num_return_sequences=1,
-            # )
-            # suggestions = [tokenizer.decode(sample_output, skip_special_tokens=True) for sample_output in sample_outputs]
-            # yield suggestions[0].replace(request, "")
-    #         yield("hello world")
-    # return Response(get_prediction())
-    print("got request")
-    return Response("Hello World")
-
+    def get_prediction():
+            request = request.args.get('request')
+            input_ids = tokenizer.encode(request, return_tensors="pt")
+            sample_outputs = model.generate(
+                input_ids,
+                do_sample=True,
+                max_new_tokens=25,
+                top_k=50,
+                top_p=0.95,
+                num_return_sequences=1,
+            )
+            suggestions = [tokenizer.decode(sample_output, skip_special_tokens=True) for sample_output in sample_outputs]
+            yield suggestions[0].replace(request, "")
+            yield("hello world")
+    return Response(get_prediction())
+    # print("got request")
+    # return Response("Hello World")
+    # print("got request")
+    # def test():
+    #     for i in range(2):
+    #         yield("hello world " + str(i))
+    #         time.sleep(5)
+    # return Response(test())
 
 if __name__ == '__main__':
     # print("test")
